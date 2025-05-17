@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
-/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable linebreak-style */
-
+import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import LoadingSpinner from './LoadingSpinner'
 import { useApi } from './useApi'
