@@ -13,4 +13,8 @@ jobs:
         run: date
 
       - name: List current directory contents
+<<<<<<< HEAD
         run: ls -l
+=======
+        run: ls -l
+>>>>>>> 74880f6 (Initial push of full-stack-open-pokedex)
