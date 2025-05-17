@@ -21,3 +21,10 @@ jobs:
 
       - name: Run linter
         run: npm run eslint
+        
+      - name: e2e tests
+        uses: microsoft/playwright-github-action@v1
+        with:
+          command: npm run test:e2e
+          start: npm run start-prod
+          wait-on: http://localhost:5000
