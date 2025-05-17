@@ -23,7 +23,7 @@ jobs:
         run: npm run eslint
         
       - name: e2e tests
-        uses: microsoft/playwright-github-action@v1
+        uses: cypress-io/github-action@v5
         with:
           command: npm run test:e2e
           start: npm run start-prod
