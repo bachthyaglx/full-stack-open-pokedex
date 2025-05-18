@@ -1,8 +1,6 @@
 # See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
 # See https://render.com/docs/blueprint-spec
 # GitHub Actions requires the if: condition to be part of the step, not a separate item.
-# Only deploy to Fly.io on push events, not on pull requests, which not unsafe
-# Only deploy to Render on push events, not on pull requests, which not unsafe
 
 name: Deployment pipeline
 
@@ -24,12 +22,14 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
+        # Only deploy to Render on push events, not on pull requests, which not unsafe
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Trigger Render deployment
+        # Only deploy to Fly.io on push events, not on pull requests, which not unsafe
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
