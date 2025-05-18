@@ -12,6 +12,8 @@ on:
     branches:
       - main
     types: [opened, synchronize]
+  schedule:
+    - cron: '0 0 1 * *'  # Run once a month at midnight UTC on the 1st
 
 jobs:
   build:
@@ -50,7 +52,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     if: always()
-
     steps:
       - name: Notify on Success
         if: ${{ needs.build.result == 'success' }}
@@ -58,9 +59,9 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           content: |
-            ✅ **Build succeeded** – Pokedex deployed
-            🔗 Commit by `${{ github.actor }}`
-            🔗 Repo: `${{ github.repository }}`
+            ✅ **Build succeeded**
+            Commit by `${{ github.actor }}`
+            Repo: `${{ github.repository }}`
 
       - name: Notify on Failure
         if: ${{ needs.build.result == 'failure' }}
@@ -69,6 +70,16 @@ jobs:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
           content: |
             ❌ **Build failed**
-            🧑‍💻 Commit: ${{ github.event.head_commit.message }}
-            🔗 Commit URL: ${{ github.event.head_commit.url }}
-            📦 Author: `${{ github.actor }}`
+            Commit: ${{ github.event.head_commit.message }}
+            Commit URL: ${{ github.event.head_commit.url }}
+            Author: `${{ github.actor }}`
+
+  ping_app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check on deployed app
+        uses: LouisBrunner/url-health-check-action@v1.3.0
+        with:
+          url: https://full-stack-open-pokedex-lv6n.onrender.com/health
+          max-attempts: 3
+          retry-delay: 10s
