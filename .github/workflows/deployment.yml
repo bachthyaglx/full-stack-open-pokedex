@@ -14,7 +14,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  builds::
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
 
   tag_release:
     name: Bump version and push tag
-    needs: [simple_deployment_pipeline]
+    needs: [builds]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
@@ -50,7 +50,7 @@ jobs:
   notify_discord:
     name: Notify Discord
     runs-on: ubuntu-latest
-    needs: [simple_deployment_pipeline]
+    needs: [builds]
     if: always()  # Run this job even if previous fails
 
     steps:
