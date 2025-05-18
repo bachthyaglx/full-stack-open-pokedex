@@ -56,21 +56,19 @@ jobs:
         if: ${{ needs.build.result == 'success' }}
         uses: tsickert/discord-webhook@v5.0.0
         with:
-          severity: info
-          details: |
-            ✅ Build succeeded – Pokedex deployed
-            🔗 Commit by ${{ github.actor }}
-            🔗 Repo: ${{ github.repository }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            ✅ **Build succeeded** – Pokedex deployed
+            🔗 Commit by `${{ github.actor }}`
+            🔗 Repo: `${{ github.repository }}`
 
       - name: Notify on Failure
         if: ${{ needs.build.result == 'failure' }}
         uses: tsickert/discord-webhook@v5.0.0
         with:
-          severity: error
-          details: |
-            ❌ Build failed
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          content: |
+            ❌ **Build failed**
             🧑‍💻 Commit: ${{ github.event.head_commit.message }}
-            🔗 ${{ github.event.head_commit.url }}
-            📦 Author: ${{ github.actor }}
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            🔗 Commit URL: ${{ github.event.head_commit.url }}
+            📦 Author: `${{ github.actor }}`
