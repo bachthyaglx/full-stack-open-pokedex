@@ -1,8 +1,10 @@
 # See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
 # See https://render.com/docs/blueprint-spec
 # GitHub Actions requires the if: condition to be part of the step, not a separate item.
+# Only deploy to Fly.io on push events, not on pull requests, which not unsafe
+# Only deploy to Render on push events, not on pull requests, which not unsafe
 
-name: Deploy to Fly.io and Render
+name: Deployment pipeline
 
 on:
   push:
@@ -11,23 +13,39 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize]
+
+env:
+  SHOULD_DEPLOY: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
 
 jobs:
-  deploy:
-    name: Deploy app
+  simple_deployment_pipeline:
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
-        if: ${{ github.event_name == 'push' }} # Only deploy to Fly.io on push events, not on pull requests, which not unsafe
+        if: ${{ env.SHOULD_DEPLOY == 'true' }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Trigger Render deployment
-        if: ${{ github.event_name == 'push' }} # Only deploy to Render on push events, not on pull requests, which not unsafe
+        if: ${{ env.SHOULD_DEPLOY == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+
+  tag_release:
+    name: Bump version and push tag
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    if: ${{ env.SHOULD_DEPLOY == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump version (patch) and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
