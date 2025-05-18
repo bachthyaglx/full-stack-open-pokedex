@@ -1,7 +1,6 @@
 /* eslint-disable semi */
 /* eslint-disable linebreak-style */
 /* eslint-disable quotes */
-
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const path = require('path');
 

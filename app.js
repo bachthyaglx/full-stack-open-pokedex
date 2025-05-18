@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
-/* eslint-disable semi */
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
 
 const express = require('express')
 const path = require('path')
@@ -11,7 +10,7 @@ const PORT = process.env.PORT || 5000
 // Serve static files from the React app
 app.use(express.static('dist'))
 
-// Fallback to index.html for React Router routes
+// Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'dist', 'index.html'))
 })
