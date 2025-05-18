@@ -46,3 +46,36 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
+  notify_discord:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    needs: [simple_deployment_pipeline]
+    if: always()  # Run this job even if previous fails
+
+    steps:
+      - name: Notify on Success
+        if: ${{ needs.simple_deployment_pipeline.result == 'success' }}
+        uses: tsickert/discord-webhook@v5.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          username: GitHub Actions
+          avatar-url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          content: |
+            ✅ **Build succeeded** – Pokedex deployed
+            🔗 Commit by `${{ github.actor }}`
+            🔗 Repository: ${{ github.repository }}
+
+      - name: Notify on Failure
+        if: ${{ needs.simple_deployment_pipeline.result == 'failure' }}
+        uses: tsickert/discord-webhook@v5.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          username: GitHub Actions
+          avatar-url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          content: |
+            ❌ **Build failed**
+            🧑‍💻 Commit: ${{ github.event.head_commit.message }}
+            🔗 ${{ github.event.head_commit.url }}
+            📦 Author: `${{ github.actor }}`
+
