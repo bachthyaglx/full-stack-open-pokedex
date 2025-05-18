@@ -20,6 +20,9 @@ app.listen(PORT, () => {
 })
 
 // Health check endpoint
+// Tells Fly.io and Render to ping /health after deployment to ensure the app is healthy before marking the deployment as successful.)
 app.get('/health', (req, res) => {
+  // eslint-disable-next-line no-constant-condition
+  if (true) throw new Error('error...')
   res.send('ok')
 })
