@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Notify on Success
-        if: ${{ needs.simple_deployment_pipeline.result == 'success' }}
+        if: ${{ needs.build.result == 'success' }}
         uses: tsickert/discord-webhook@v5.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -67,7 +67,7 @@ jobs:
             🔗 Repository: ${{ github.repository }}
 
       - name: Notify on Failure
-        if: ${{ needs.simple_deployment_pipeline.result == 'failure' }}
+        if: ${{ needs.build.result == 'failure' }}
         uses: tsickert/discord-webhook@v5.0.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
