@@ -22,6 +22,7 @@ primary_region = 'fra'
   min_machines_running = 0
   processes = ['app']
 
+  # Configure then an HTTP check that ensures the health of the deployments based on the HTTP request to the defined health check endpoint.
   [[http_service.checks]]
     grace_period = "10s"
     interval = "30s"
